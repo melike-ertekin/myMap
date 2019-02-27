@@ -2,25 +2,36 @@ package com.example.android.mymap;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.Point;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener,
+        OnMapReadyCallback {
 
     private GoogleMap mMap;
     private UiSettings mUiSettings;
@@ -29,7 +40,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -50,27 +60,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
+
 
         settingsForMap();
 
+        mMap.setOnCameraIdleListener(this);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraMoveCanceledListener(this);
 
+        // Show Silicon Valley on the map.
+        mMap.moveCamera(CameraUpdateFactory
+                .newLatLngZoom(new LatLng(37.4029937, -122.1811827), 10));
+/*
         //Add a marker in Silicon Valley and move the camera
         LatLng siliconValley = new LatLng(37.4029937, -122.1811827);
         mMap.addMarker(new MarkerOptions().position(siliconValley).title("Marker in Silicon Valley"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(siliconValley));
-
-        // Instantiates a new Polyline object and adds points to define a rectangle
-        PolylineOptions randomLine = new PolylineOptions()
-                .add(new LatLng(37.40, -122.0))
-                .add(new LatLng(37.45, -122.0)) ; // North of the previous point, but at the same longitude
-                //.add(new LatLng(37.45, -122.2))  // Same latitude, and 30km to the west
-                //.add(new LatLng(37.35, -122.2))  // Same longitude, and 16km to the south
-                //.add(new LatLng(37.35, -122.0)); // Closes the polyline.
+*/
 
 
-        Polyline polyline = mMap.addPolyline(randomLine);
+
+    }
+
+
+
+    @Override
+    public void onCameraMove() {
+        mMap.clear();
+        Log.d("onCameraMove","The camera is moving.");
+      //  Toast.makeText(this, "The camera is moving.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+        Log.d("onCameraMoveCanceled","Camera movement canceled.");
+       // Toast.makeText(this, "Camera movement canceled.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        Log.d("onCameraIdle","The camera has stopped moving.");
+       // Toast.makeText(this, "The camera has stopped moving.", Toast.LENGTH_SHORT).show();
+
+        calculateCorners();
+    }
+
+
+
+
+
+
+
+    private void calculateCorners() {
+
+        Projection projection = mMap.getProjection();
+
+        VisibleRegion visibleRegion = projection.getVisibleRegion();
+
+        LatLng corner = projection.fromScreenLocation(new Point(0, 0));
+        Log.d("Projection","North East : "+visibleRegion.latLngBounds.northeast.latitude + ","+visibleRegion.latLngBounds.northeast.longitude);
+        Log.d("Projection","South West : "+visibleRegion.latLngBounds.southwest.latitude + ","+visibleRegion.latLngBounds.southwest.longitude);
+
+
+
+        PolylineOptions randomLine1 = new PolylineOptions()
+                .add(new LatLng(visibleRegion.latLngBounds.northeast.latitude, visibleRegion.latLngBounds.northeast.longitude))
+                .add(new LatLng(visibleRegion.latLngBounds.southwest.latitude, visibleRegion.latLngBounds.southwest.longitude)) ;
+        Polyline polyline1 = mMap.addPolyline(randomLine1);
+
+
     }
 
     private void settingsForMap() {
@@ -80,6 +140,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mUiSettings.setZoomGesturesEnabled(true);
         mUiSettings.setRotateGesturesEnabled(true);
     }
+
+
 
 
 
