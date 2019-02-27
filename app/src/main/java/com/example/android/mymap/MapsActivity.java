@@ -30,7 +30,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnCameraMoveListener,
-        GoogleMap.OnCameraMoveCanceledListener,
         GoogleMap.OnCameraIdleListener,
         OnMapReadyCallback {
 
@@ -48,7 +47,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
     }
 
 
@@ -56,34 +54,24 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker near Silicon Valley.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-
 
         settingsForMap();
 
         mMap.setOnCameraIdleListener(this);
         mMap.setOnCameraMoveListener(this);
-        mMap.setOnCameraMoveCanceledListener(this);
 
         // Show Silicon Valley on the map.
         mMap.moveCamera(CameraUpdateFactory
                 .newLatLngZoom(new LatLng(37.4029937, -122.1811827), 10));
-/*
-        //Add a marker in Silicon Valley and move the camera
-        LatLng siliconValley = new LatLng(37.4029937, -122.1811827);
-        mMap.addMarker(new MarkerOptions().position(siliconValley).title("Marker in Silicon Valley"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(siliconValley));
-*/
-
-
-
     }
 
 
@@ -92,14 +80,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
     public void onCameraMove() {
         mMap.clear();
         Log.d("onCameraMove","The camera is moving.");
-        DrawLines();
+        //DrawLines();
       //  Toast.makeText(this, "The camera is moving.", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onCameraMoveCanceled() {
-        Log.d("onCameraMoveCanceled","Camera movement canceled.");
-       // Toast.makeText(this, "Camera movement canceled.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -110,23 +92,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         DrawLines();
     }
 
-
-
-
-
-
-
     private void DrawLines() {
 
         Projection projection = mMap.getProjection();
 
         VisibleRegion visibleRegion = projection.getVisibleRegion();
-
-
-        //LatLng northEast = new LatLng(visibleRegion.latLngBounds.northeast.latitude,visibleRegion.latLngBounds.northeast.longitude);
-        //LatLng southWest = new LatLng(visibleRegion.latLngBounds.southwest.latitude,visibleRegion.latLngBounds.southwest.longitude);
-        //Log.d("Projection","North East : "+visibleRegion.latLngBounds.northeast.latitude + ","+visibleRegion.latLngBounds.northeast.longitude);
-        //Log.d("Projection","South West : "+visibleRegion.latLngBounds.southwest.latitude + ","+visibleRegion.latLngBounds.southwest.longitude);
 
         Point corner = new Point(0, 0);
         Point northEast = projection.toScreenLocation(visibleRegion.latLngBounds.northeast);
@@ -141,10 +111,11 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         int height2 = (int) height;
         int width2 = (int) width;
 
+
+
         LatLng hps1 = projection.fromScreenLocation(new Point(oneWidthUnit, 0));
         LatLng hps2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, 0));
         LatLng hps3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, 0));
-        //LatLng hps4 = projection.fromScreenLocation(new Point(oneWidthUnit*4, 0));
 
         LatLng hpe1 = projection.fromScreenLocation(new Point(oneWidthUnit, height2));
         LatLng hpe2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, height2));
@@ -199,27 +170,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 .add(new LatLng(vpe4.latitude, vpe4.longitude));
         Polyline HoriPolyline4 = mMap.addPolyline(horizantalLine4);
 
+        int startX = oneWidthUnit;
+        int startY = oneHightUnit;
+        for(int j=1; j<4;j++){
 
+            for(int i=1;i<5;i++){
+                //Add a marker in Silicon Valley and move the camera
+                LatLng p = projection.fromScreenLocation(new Point(startX*j, startY*i));
+                mMap.addMarker(new MarkerOptions().position(p));
+            }
 
-
-
-
-
-
-
-
-
-
-/*
-        PolylineOptions randomLine1 = new PolylineOptions()
-                .add(new LatLng(visibleRegion.latLngBounds.northeast.latitude, visibleRegion.latLngBounds.northeast.longitude))
-                .add(new LatLng(visibleRegion.latLngBounds.southwest.latitude, visibleRegion.latLngBounds.southwest.longitude)) ;
-        Polyline polyline1 = mMap.addPolyline(randomLine1);
-*/
+        }
 
     }
-
-
 
     private void settingsForMap() {
         mUiSettings = mMap.getUiSettings();
@@ -228,10 +191,5 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         mUiSettings.setZoomGesturesEnabled(true);
         mUiSettings.setRotateGesturesEnabled(true);
     }
-
-
-
-
-
 
 }
