@@ -1,27 +1,42 @@
 package com.example.android.mymap;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private UiSettings mUiSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
 
@@ -38,9 +53,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        settingsForMap();
+
+
+        //Add a marker in Silicon Valley and move the camera
+        LatLng siliconValley = new LatLng(37.4029937, -122.1811827);
+        mMap.addMarker(new MarkerOptions().position(siliconValley).title("Marker in Silicon Valley"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(siliconValley));
+
+        // Instantiates a new Polyline object and adds points to define a rectangle
+        PolylineOptions randomLine = new PolylineOptions()
+                .add(new LatLng(37.40, -122.0))
+                .add(new LatLng(37.45, -122.0)) ; // North of the previous point, but at the same longitude
+                //.add(new LatLng(37.45, -122.2))  // Same latitude, and 30km to the west
+                //.add(new LatLng(37.35, -122.2))  // Same longitude, and 16km to the south
+                //.add(new LatLng(37.35, -122.0)); // Closes the polyline.
+
+
+        Polyline polyline = mMap.addPolyline(randomLine);
     }
+
+    private void settingsForMap() {
+        mUiSettings = mMap.getUiSettings();
+        mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setScrollGesturesEnabled(true);
+        mUiSettings.setZoomGesturesEnabled(true);
+        mUiSettings.setRotateGesturesEnabled(true);
+    }
+
+
+
+
 }
