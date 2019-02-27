@@ -92,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
     public void onCameraMove() {
         mMap.clear();
         Log.d("onCameraMove","The camera is moving.");
+        DrawLines();
       //  Toast.makeText(this, "The camera is moving.", Toast.LENGTH_SHORT).show();
     }
 
@@ -133,19 +134,21 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
 
         double width = Math.sqrt(Math.pow(northEast.x, 2) + Math.pow(northEast.y,2));
-        double hight = Math.sqrt(Math.pow(southWest.x, 2) + Math.pow(southWest.y,2));
+        double height = Math.sqrt(Math.pow(southWest.x, 2) + Math.pow(southWest.y,2));
 
         int oneWidthUnit = (int)(width/4);
-        int hight2 = (int) hight;
+        int oneHightUnit = (int)(height/5);
+        int height2 = (int) height;
+        int width2 = (int) width;
 
         LatLng hps1 = projection.fromScreenLocation(new Point(oneWidthUnit, 0));
         LatLng hps2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, 0));
         LatLng hps3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, 0));
         //LatLng hps4 = projection.fromScreenLocation(new Point(oneWidthUnit*4, 0));
 
-        LatLng hpe1 = projection.fromScreenLocation(new Point(oneWidthUnit, hight2));
-        LatLng hpe2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, hight2));
-        LatLng hpe3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, hight2));
+        LatLng hpe1 = projection.fromScreenLocation(new Point(oneWidthUnit, height2));
+        LatLng hpe2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, height2));
+        LatLng hpe3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, height2));
 
         PolylineOptions randomLine1 = new PolylineOptions()
                 .add(new LatLng(hps1.latitude, hps1.longitude))
@@ -161,6 +164,48 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
                 .add(new LatLng(hps3.latitude, hps3.longitude))
                 .add(new LatLng(hpe3.latitude, hpe3.longitude));
         Polyline polyline3 = mMap.addPolyline(randomLine3);
+
+
+
+
+
+        LatLng vps1 = projection.fromScreenLocation(new Point(0, oneHightUnit));
+        LatLng vps2 = projection.fromScreenLocation(new Point(0, oneHightUnit*2));
+        LatLng vps3 = projection.fromScreenLocation(new Point(0, oneHightUnit*3));
+        LatLng vps4 = projection.fromScreenLocation(new Point(0, oneHightUnit*4));
+
+        LatLng vpe1 = projection.fromScreenLocation(new Point(width2, oneHightUnit));
+        LatLng vpe2 = projection.fromScreenLocation(new Point(width2, oneHightUnit*2));
+        LatLng vpe3 = projection.fromScreenLocation(new Point(width2, oneHightUnit*3));
+        LatLng vpe4 = projection.fromScreenLocation(new Point(width2, oneHightUnit*4));
+
+        PolylineOptions horizantalLine1 = new PolylineOptions()
+                .add(new LatLng(vps1.latitude, vps1.longitude))
+                .add(new LatLng(vpe1.latitude, vpe1.longitude));
+        Polyline HoriPolyline1 = mMap.addPolyline(horizantalLine1);
+
+        PolylineOptions horizantalLine2 = new PolylineOptions()
+                .add(new LatLng(vps2.latitude, vps2.longitude))
+                .add(new LatLng(vpe2.latitude, vpe2.longitude));
+        Polyline HoriPolyline2 = mMap.addPolyline(horizantalLine2);
+
+        PolylineOptions horizantalLine3 = new PolylineOptions()
+                .add(new LatLng(vps3.latitude, vps3.longitude))
+                .add(new LatLng(vpe3.latitude, vpe3.longitude));
+        Polyline HoriPolyline3 = mMap.addPolyline(horizantalLine3);
+
+        PolylineOptions horizantalLine4 = new PolylineOptions()
+                .add(new LatLng(vps4.latitude, vps4.longitude))
+                .add(new LatLng(vpe4.latitude, vpe4.longitude));
+        Polyline HoriPolyline4 = mMap.addPolyline(horizantalLine4);
+
+
+
+
+
+
+
+
 
 
 
