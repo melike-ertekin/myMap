@@ -17,3 +17,6 @@
     - activate DrawLines() method in onCameraMove() and deactivate DrawLines() method  in the onCameraIdle() method
   
   Default settings: activated DrawLines() method  in the onCameraIdle() method
+### Screenshot:
+
+  ![Screenshot](assets/markdown-img.png)
