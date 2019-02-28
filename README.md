@@ -10,11 +10,15 @@
   1. If you want to draw lines when camera is idle,
   
   
-    - activate DrawLines() method in onCameraIdle() method and deactivate DrawLines() method  in the onCameraMove() method
+    + activate DrawLines() method in onCameraIdle() method, 
+    - deactivate DrawLines() method  in the onCameraMove() method, 
+    - deactivate DrawLines() in onMapReady() method.
   2. If you want to draw lines immediately after camera moves,
   
   
-    - activate DrawLines() method in onCameraMove() and deactivate DrawLines() method  in the onCameraIdle() method
+    + activate DrawLines() method in onCameraMove(), 
+    + activate DrawLines() in onMapReady() method,
+    - deactivate DrawLines() method  in the onCameraIdle() method.
   
   Default settings: activated DrawLines() method  in the onCameraIdle() method
 ### Screenshot:
