@@ -65,13 +65,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         mMap = googleMap;
 
         settingsForMap();
+        // Show Silicon Valley on the map.
+        mMap.moveCamera(CameraUpdateFactory
+                .newLatLngZoom(new LatLng(37.4029937, -122.1811827), 10));
+
+       // DrawLines();
 
         mMap.setOnCameraIdleListener(this);
         mMap.setOnCameraMoveListener(this);
 
-        // Show Silicon Valley on the map.
-        mMap.moveCamera(CameraUpdateFactory
-                .newLatLngZoom(new LatLng(37.4029937, -122.1811827), 10));
+
+
+
     }
 
 
@@ -82,7 +87,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
         mMap.clear();
 
-        //if you want to draw lines immediately after camera moves activate DrawLines() method in onCameraMove() and deactivate DrawLines() method  in the onCameraIdle() method
+        //if you want to draw lines immediately after camera moves activate DrawLines() method in onCameraMove() + activate DrawLines() in onMapReady() method
+        // and deactivate DrawLines() method  in the onCameraIdle() method
         //DrawLines();
 
     }
@@ -91,7 +97,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
     public void onCameraIdle() {
         Log.d("onCameraIdle","The camera has stopped moving.");
 
-        //if you want to draw lines when camera is idle activate DrawLines() method in onCameraIdle() and deactivate DrawLines() method  in the onCameraMove() method
+        //if you want to draw lines when camera is idle activate DrawLines() method in onCameraIdle()
+        // and deactivate DrawLines() method  in the onCameraMove() method + deactivate DrawLines() in onMapReady()
        DrawLines();
     }
 
