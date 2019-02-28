@@ -78,27 +78,30 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
 
     @Override
     public void onCameraMove() {
-        mMap.clear();
         Log.d("onCameraMove","The camera is moving.");
+
+        mMap.clear();
+
+        //if you want to draw lines immediately after camera moves activate DrawLines() method in onCameraMove() and deactivate DrawLines() method  in the onCameraIdle() method
         //DrawLines();
-      //  Toast.makeText(this, "The camera is moving.", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     public void onCameraIdle() {
         Log.d("onCameraIdle","The camera has stopped moving.");
-       // Toast.makeText(this, "The camera has stopped moving.", Toast.LENGTH_SHORT).show();
 
-        DrawLines();
+        //if you want to draw lines when camera is idle activate DrawLines() method in onCameraIdle() and deactivate DrawLines() method  in the onCameraMove() method
+       DrawLines();
     }
 
+    //Calculates screen's width and height and calls drawVerticalLines, drawHorizontalLines, drawMarker methods
     private void DrawLines() {
 
         Projection projection = mMap.getProjection();
 
         VisibleRegion visibleRegion = projection.getVisibleRegion();
 
-        Point corner = new Point(0, 0);
         Point northEast = projection.toScreenLocation(visibleRegion.latLngBounds.northeast);
         Point southWest = projection.toScreenLocation(visibleRegion.latLngBounds.southwest);
 
@@ -106,84 +109,87 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnCamera
         double width = Math.sqrt(Math.pow(northEast.x, 2) + Math.pow(northEast.y,2));
         double height = Math.sqrt(Math.pow(southWest.x, 2) + Math.pow(southWest.y,2));
 
-        int oneWidthUnit = (int)(width/4);
-        int oneHightUnit = (int)(height/5);
-        int height2 = (int) height;
-        int width2 = (int) width;
+        int unitWidth = (int)(width/4);
+        int unitHeight = (int)(height/5);
 
 
+        drawVerticalLines(unitWidth, unitHeight, projection);
+        drawHorizontalLines(unitWidth, unitHeight, projection);
 
-        LatLng hps1 = projection.fromScreenLocation(new Point(oneWidthUnit, 0));
-        LatLng hps2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, 0));
-        LatLng hps3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, 0));
+        drawMarker(unitWidth, unitHeight, projection);
 
-        LatLng hpe1 = projection.fromScreenLocation(new Point(oneWidthUnit, height2));
-        LatLng hpe2 = projection.fromScreenLocation(new Point(oneWidthUnit*2, height2));
-        LatLng hpe3 = projection.fromScreenLocation(new Point(oneWidthUnit*3, height2));
-
-        PolylineOptions randomLine1 = new PolylineOptions()
-                .add(new LatLng(hps1.latitude, hps1.longitude))
-                .add(new LatLng(hpe1.latitude, hpe1.longitude));
-        Polyline polyline1 = mMap.addPolyline(randomLine1);
-
-        PolylineOptions randomLine2 = new PolylineOptions()
-                .add(new LatLng(hps2.latitude, hps2.longitude))
-                .add(new LatLng(hpe2.latitude, hpe2.longitude));
-        Polyline polyline2 = mMap.addPolyline(randomLine2);
-
-        PolylineOptions randomLine3 = new PolylineOptions()
-                .add(new LatLng(hps3.latitude, hps3.longitude))
-                .add(new LatLng(hpe3.latitude, hpe3.longitude));
-        Polyline polyline3 = mMap.addPolyline(randomLine3);
-
-
-
-
-
-        LatLng vps1 = projection.fromScreenLocation(new Point(0, oneHightUnit));
-        LatLng vps2 = projection.fromScreenLocation(new Point(0, oneHightUnit*2));
-        LatLng vps3 = projection.fromScreenLocation(new Point(0, oneHightUnit*3));
-        LatLng vps4 = projection.fromScreenLocation(new Point(0, oneHightUnit*4));
-
-        LatLng vpe1 = projection.fromScreenLocation(new Point(width2, oneHightUnit));
-        LatLng vpe2 = projection.fromScreenLocation(new Point(width2, oneHightUnit*2));
-        LatLng vpe3 = projection.fromScreenLocation(new Point(width2, oneHightUnit*3));
-        LatLng vpe4 = projection.fromScreenLocation(new Point(width2, oneHightUnit*4));
-
-        PolylineOptions horizantalLine1 = new PolylineOptions()
-                .add(new LatLng(vps1.latitude, vps1.longitude))
-                .add(new LatLng(vpe1.latitude, vpe1.longitude));
-        Polyline HoriPolyline1 = mMap.addPolyline(horizantalLine1);
-
-        PolylineOptions horizantalLine2 = new PolylineOptions()
-                .add(new LatLng(vps2.latitude, vps2.longitude))
-                .add(new LatLng(vpe2.latitude, vpe2.longitude));
-        Polyline HoriPolyline2 = mMap.addPolyline(horizantalLine2);
-
-        PolylineOptions horizantalLine3 = new PolylineOptions()
-                .add(new LatLng(vps3.latitude, vps3.longitude))
-                .add(new LatLng(vpe3.latitude, vpe3.longitude));
-        Polyline HoriPolyline3 = mMap.addPolyline(horizantalLine3);
-
-        PolylineOptions horizantalLine4 = new PolylineOptions()
-                .add(new LatLng(vps4.latitude, vps4.longitude))
-                .add(new LatLng(vpe4.latitude, vpe4.longitude));
-        Polyline HoriPolyline4 = mMap.addPolyline(horizantalLine4);
-
-        int startX = oneWidthUnit;
-        int startY = oneHightUnit;
-        for(int j=1; j<4;j++){
-
-            for(int i=1;i<5;i++){
-                //Add a marker in Silicon Valley and move the camera
-                LatLng p = projection.fromScreenLocation(new Point(startX*j, startY*i));
-                mMap.addMarker(new MarkerOptions().position(p));
-            }
-
-        }
 
     }
 
+    /**
+     * Draws horizontal lines
+     *
+     * @param unitWidth is 1/4 of width of screen
+     * @param unitHeight is 1/5 of height of screen
+     * @param projection is used to translate between on screen location and geographic coordinates on the surface
+     *                   of the Earth (LatLng). Screen location is in screen pixels (not display pixels) with respect to the top left corner
+     *                   of the map (and not necessarily of the whole screen).
+     */
+    private void drawHorizontalLines(int unitWidth, int unitHeight, Projection projection) {
+
+        for (int i=1; i<5; i++){
+            LatLng startPoint = projection.fromScreenLocation(new Point(0, unitHeight*i));
+            LatLng endPoint = projection.fromScreenLocation(new Point(unitWidth*4, unitHeight*i));
+            PolylineOptions randomLine1 = new PolylineOptions()
+                    .add(new LatLng(startPoint.latitude, startPoint.longitude))
+                    .add(new LatLng(endPoint.latitude, endPoint.longitude));
+           mMap.addPolyline(randomLine1);
+
+        }
+
+
+
+    }
+
+
+    /**
+     * Draws vertical lines
+     *
+     * @param unitWidth is 1/4 of width of screen
+     * @param unitHeight is 1/5 of height of screen
+     * @param projection is used to translate between on screen location and geographic coordinates on the surface
+     *                   of the Earth (LatLng). Screen location is in screen pixels (not display pixels) with respect to the top left corner
+     *                   of the map (and not necessarily of the whole screen).
+     */
+    private void drawVerticalLines(int unitWidth, int unitHeight, Projection projection) {
+
+        for (int i=1; i<4; i++){
+            LatLng startPoint = projection.fromScreenLocation(new Point(unitWidth*i, 0));
+            LatLng endPoint = projection.fromScreenLocation(new Point(unitWidth*i, unitHeight*5));
+            PolylineOptions randomLine1 = new PolylineOptions()
+                    .add(new LatLng(startPoint.latitude, startPoint.longitude))
+                    .add(new LatLng(endPoint.latitude, endPoint.longitude));
+            mMap.addPolyline(randomLine1);
+
+        }
+    }
+
+
+    /**
+     * Put markers to intersections
+     *
+     * @param pointX is x coordinate of the point
+     * @param pointY is y coordinate of the point
+     * @param projection is used to translate between on screen location and geographic coordinates on the surface
+     *                   of the Earth (LatLng). Screen location is in screen pixels (not display pixels) with respect to the top left corner
+     *                   of the map (and not necessarily of the whole screen).
+     */
+    private void drawMarker(int pointX, int pointY, Projection projection) {
+
+        for(int j=1; j<4; j++){
+            for(int i=1 ;i<5; i++){
+                //Add a marker to intersection
+                mMap.addMarker(new MarkerOptions().position(projection.fromScreenLocation(new Point(pointX*j, pointY*i))));
+            }
+        }
+    }
+
+    //Map settings
     private void settingsForMap() {
         mUiSettings = mMap.getUiSettings();
         mUiSettings.setZoomControlsEnabled(true);
